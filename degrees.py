@@ -1,9 +1,9 @@
 import csv
 import sys
+import requests
 
 # Maps names to a set of corresponding person_ids
 names = {}
-
 # Maps person_ids to a dictionary of: name, birth, movies (a set of movie_ids)
 people = {}
 
@@ -11,12 +11,18 @@ people = {}
 movies = {}
 
 
-def load_data(directory):
+url_people = "https://drive.google.com/u/0/uc?id=1zbsRHR2CkM84nYhWs5jiz1h2NxpzKToP&export=download"
+url_movies = "https://drive.google.com/u/0/uc?id=1fKdqvcdatvPkfYICvwHIAldwdn2-fvo_&export=download"
+url_stars = "https://drive.google.com/u/0/uc?id=1R6qS42WGAhQgBok89i5y3H3gKvJwlIC5&export=download"
+
+def load_data():
     """
     Load data from CSV files into memory.
     """
     # Load people
-    with open(f"{directory}/people.csv", encoding="utf-8") as f:
+    p = requests.get(url_people)
+    open("people.csv", "wb").write(p.content)
+    with open("people.csv", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             people[row["id"]] = {
@@ -28,9 +34,11 @@ def load_data(directory):
                 names[row["name"].lower()] = {row["id"]}
             else:
                 names[row["name"].lower()].add(row["id"])
-
+    print("Part one Successfully loaded.")
     # Load movies
-    with open(f"{directory}/movies.csv", encoding="utf-8") as f:
+    m = requests.get(url_movies)
+    open("movies.csv", "wb").write(m.content)
+    with open("movies.csv", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             movies[row["id"]] = {
@@ -38,9 +46,11 @@ def load_data(directory):
                 "year": row["year"],
                 "stars": set()
             }
-
+    print("Part two Successfully loaded.")
     # Load stars
-    with open(f"{directory}/stars.csv", encoding="utf-8") as f:
+    s = requests.get(url_stars)
+    open("stars.csv", "wb").write(s.content)
+    with open("stars.csv", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             try:
@@ -48,16 +58,12 @@ def load_data(directory):
                 movies[row["movie_id"]]["stars"].add(row["person_id"])
             except KeyError:
                 pass
-
+    print("Part three Successfully loaded.")
 
 def main():
-    if len(sys.argv) > 2:
-        sys.exit("Usage: python degrees.py [directory]")
-    directory = sys.argv[1] if len(sys.argv) == 2 else "large"
-
     # Load data from files into memory
     print("Loading data...")
-    load_data(directory)
+    load_data()
     print("Data loaded.")
     source = person_id_for_name(input("Name: "))
     if source is None:
