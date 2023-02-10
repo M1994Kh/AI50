@@ -1,1 +1,2 @@
 # AI50
+This is my new project in the AI learning path. A Python code that uses IMDB databases to find the degrees of separation between two actors in the format that is shown in the video. The code uses a revised approach to find the path between two names. The algorithm is a breadth-first search (BFS) that expands the shallowest node in the frontier. If there is a path between two nodes, the algorithm will find the shortest path in the shortest time. 
